@@ -89,3 +89,77 @@ JavaScript不像python一样简洁，反而是非常冗杂的，拿到一份新�
 在学校：将工具设计为VS Code插件，并在清华大学的前端/软件工程课程上进行推广，如果效果良好的话，可以推荐给其它高校的课程老师使用，如果我们的工具确实很棒的话，他们将会推荐给自己的学生。
 
 在公司：首先针对一些小型公司进行试用试点，进行一定的改进，并收获一定的用户基础，然后再推广到大公司。
+
+# 运行教程代码
+
+使用作者提供的docker。
+
+#### 安装docker
+
+使用官网教程，安装docker再windows上的版本
+
+#### 下载作者提供的docker
+
+作者提供了cpu与gpu两种版本，考虑到gpu版本需要安装cuda，较为麻烦，我选择安装cpu版本。
+
+```git
+docker pull hamelsmu/ml-cpu
+```
+
+#### 启动docker并下载源代码
+
+执行下面的指令启动docker
+
+```
+docker run -it -p 11086:11086 hamelsmu/ml-cpu bash
+```
+
+再下载源代码
+
+```
+git clone https://github.com/hamelsmu/code_search.git
+```
+
+#### 启动jupyter
+
+在bash中启动jupyter
+
+```
+jupyter notebook --ip 0.0.0.0 --port 11086 --allow-root
+```
+
+这时可以在本机的浏览器中输入ip与端口进行访问，进入之后发现我们的代码已经再jupyter中了。
+
+##### 1 - Preprocess Data
+
+首先找到第三个代码块中写的链接，手动下载一部分数据，然后再将其缩小，然后上传到jupyter中。
+
+对代码进行修改，使其不再从googlecloud下载数据而是读入我们自己的数据。将cpu-core改为8
+
+```python
+df = pd.concat([pd.read_csv(f'data.csv')])
+```
+
+创建目录data，运行代码，发现运行成功，再data目录下创建了很多数据文件。
+
+##### 2 - Train Function Summarizer With Keras + TF
+
+- 运行后发现缺少tensorflow与annoy两个包（怀疑docker装的是不是tensorflow-gpu），使用pip安装这两个包
+- 修改第12个代码块中的batch_size为100，epochs为1，加快速度，节省内存（毕竟数据很少）
+- 运行代码，成功结束
+
+##### 3 - Train Language Model Using FastAI
+
+- 缺少在data目录下的lang_model与lang_model_emb目录，先创建
+- 再次运行，还是找不到文件，发现创建的文件名称与读入的文件名称不一致，创建的文件名称后面带_v2而读入的没有，修改代码中读入的文件名
+- 修改model.py中171，176行的values为np.array(values).astype(float)，修复类型的错误
+- 再次运行，成功结束
+
+##### 4 - Train Model To Map Code Embeddings to Language Embeddings
+
+- 将batch_size改为100，epoch改为1
+- 运行代码，成功结束
+
+##### 5 - Build Search Index
+
+直接运行代码即可。
