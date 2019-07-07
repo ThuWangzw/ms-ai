@@ -152,7 +152,6 @@ df = pd.concat([pd.read_csv(f'data.csv')])
 
 - 缺少在data目录下的lang_model与lang_model_emb目录，先创建
 - 再次运行，还是找不到文件，发现创建的文件名称与读入的文件名称不一致，创建的文件名称后面带_v2而读入的没有，修改代码中读入的文件名
-- 修改model.py中171，176行的values为np.array(values).astype(float)，修复类型的错误
 - 再次运行，成功结束
 
 ##### 4 - Train Model To Map Code Embeddings to Language Embeddings
